@@ -10,8 +10,18 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 variables:
-  imageName: 'your-container-image-name:$(build.buildId)'
+  imageName: 'pwtriageit/hello-world:$(build.buildId)'
 
 steps:
+- script: docker login -u $(dockerId) -p $(dockerPassword)
+  displayName: Docker login
+
 - script: docker build -f Dockerfile -t $(imageName) .
   displayName: 'docker build'
+
+- task: Docker@1
+  displayName: Push image
+  inputs:
+    imageName: '$(imageName)'
+    includeLatestTag: "$(includeLatest)"
+    command: 'push'
